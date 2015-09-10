@@ -1,0 +1,15 @@
+target/
+.settings/
+.classpath
+.project
+*/.settings/
+*/.checkstyle
+*/.classpath
+*/test-output/
+.idea/
+*.iml
+*/.gitignore
+.idea/libraries
+.pmd
+.metadata
+RemoteSystemsTempFiles

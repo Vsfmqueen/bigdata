@@ -44,8 +44,6 @@ public class IpMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
     private void calculateBrowsers(String logLine, Context context) {
         if (logLine.contains("Mozilla")) {
             context.getCounter("browser", "Mozilla").increment(1);
-        } else if (logLine.contains("MSIE")) {
-            context.getCounter("browser", "MSIE").increment(1);
         } else if (logLine.contains("Opera")) {
             context.getCounter("browser", "Opera").increment(1);
         } else {

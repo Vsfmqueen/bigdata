@@ -52,7 +52,6 @@ public class IpDriver extends Configured implements Tool {
         System.out.println("Opera browser users count = " + operaCount);
         System.out.println("Other browser users count = " + otherCount);
 
-
         LOG.info("IP Job has ended");
         return isWaitForCompletion ? 0 : 1;
     }

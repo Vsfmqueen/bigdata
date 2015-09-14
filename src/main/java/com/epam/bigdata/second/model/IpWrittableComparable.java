@@ -84,4 +84,10 @@ public class IpWrittableComparable implements WritableComparable {
         result = 31 * result + count;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "average=" + average +
+                ", count=" + count;
+    }
 }

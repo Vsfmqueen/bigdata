@@ -1,17 +1,20 @@
 package com.epam.bigdata.second;
 
-import com.epam.bigdata.second.model.IpWrittableComparable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class IpCombiner extends Reducer<Text, IntWritable, Text, IpWrittableComparable> {
+public class IpCombiner extends Reducer<Text, IntWritable, Text, Text> {
+    private static final Logger LOG = Logger.getLogger(IpCombiner.class);
+
     @Override
     public void reduce(Text key, Iterable<IntWritable> values,
                        Context context)
             throws IOException, InterruptedException {
+        LOG.info("Combining for ip = " + key + "has started!");
         int count = 0;
         int sum = 0;
 
@@ -20,6 +23,9 @@ public class IpCombiner extends Reducer<Text, IntWritable, Text, IpWrittableComp
             sum += value.get();
         }
         double average = sum / count;
-        context.write(key, new IpWrittableComparable(average, count));
+       // IpWrittableComparable result = new IpWrittableComparable(average, count);
+        Text result = new Text(key + "," + average + "," + count);
+        context.write(key, result);
+        LOG.info("Combining for ip = " + key + "has ended! Value = " + result);
     }
 }

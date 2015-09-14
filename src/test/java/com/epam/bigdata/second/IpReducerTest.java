@@ -1,7 +1,6 @@
 package com.epam.bigdata.second;
 
 import com.epam.bigdata.second.model.IpWrittableComparable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.ReduceDriver;
 import org.junit.Before;

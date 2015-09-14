@@ -5,6 +5,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.CounterGroup;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -31,8 +32,7 @@ public class IpDriver extends Configured implements Tool {
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         job.setMapperClass(IpMapper.class);
-     //   job.setCombinerClass(IpCombiner.class);
-        job.setReducerClass(IpCombiner.class);
+        job.setReducerClass(IpReducer.class);
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
@@ -41,6 +41,18 @@ public class IpDriver extends Configured implements Tool {
         job.setOutputValueClass(Text.class);
 
         boolean isWaitForCompletion = job.waitForCompletion(true);
+
+        CounterGroup group = job.getCounters().getGroup("browser");
+        long mozillaCount = group.getUnderlyingGroup().findCounter("Mozilla").getValue();
+        long operaCount = group.getUnderlyingGroup().findCounter("Opera").getValue();
+        long otherCount = group.getUnderlyingGroup().findCounter("Other").getValue();
+
+
+        System.out.println("Mozilla browser users count = " + mozillaCount);
+        System.out.println("Opera browser users count = " + operaCount);
+        System.out.println("Other browser users count = " + otherCount);
+
+
         LOG.info("IP Job has ended");
         return isWaitForCompletion ? 0 : 1;
     }

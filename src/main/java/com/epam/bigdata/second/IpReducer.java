@@ -1,24 +1,32 @@
 package com.epam.bigdata.second;
 
 import com.epam.bigdata.second.model.IpWrittableComparable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class IpReducer extends Reducer<Text, IpWrittableComparable, Text, Text> {
+public class IpReducer extends Reducer<Text, IntWritable, Text, Text> {
     private static final Logger LOG = Logger.getLogger(IpReducer.class);
+
     @Override
-    public void reduce(Text key, Iterable<IpWrittableComparable> values,
+    public void reduce(Text key, Iterable<IntWritable> values,
                        Context context)
             throws IOException, InterruptedException {
-        LOG.info("Reducing for ip = " + key + "has started!");
-        String outputValue = "";
-        for (IpWrittableComparable value : values) {
-            outputValue = value.getAverage() + "," + value.getCount();
+        LOG.info("Combining for ip = " + key + "has started!");
+        int count = 0;
+        int sum = 0;
+
+        for (IntWritable value : values) {
+            count++;
+            sum += value.get();
         }
-        context.write(key, new Text(outputValue));
-        LOG.info("Reducing for ip = " + key + "has ended! Value = " + outputValue);
+        double average = sum / count;
+        IpWrittableComparable result = new IpWrittableComparable(average, count);
+        Text textResult = new Text(key + "," + result);
+        context.write(key, textResult);
+        LOG.info("Combining for ip = " + key + "has ended! Value = " + textResult);
     }
 }

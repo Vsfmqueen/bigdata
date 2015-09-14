@@ -1,6 +1,7 @@
 package com.epam.bigdata.second;
 
 import com.epam.bigdata.second.model.IpWrittableComparable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.ReduceDriver;
 import org.junit.Before;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class IpReducerTest {
-    ReduceDriver<Text, IpWrittableComparable, Text, Text> reduceDriver;
+    ReduceDriver<Text, IntWritable, Text, Text> reduceDriver;
 
     @Before
     public void setUp() {
@@ -22,9 +23,10 @@ public class IpReducerTest {
 
     @Test
     public void testReducer() throws IOException {
-        List<IpWrittableComparable> values = Arrays.asList(new IpWrittableComparable(12.5, 15));
+        List<IntWritable> values = Arrays.asList(new IntWritable(15), new IntWritable(15));
         reduceDriver.withInput(new Text("ip1"), values);
-        reduceDriver.withOutput(new Text("ip1"), new Text("12.5,15"));
+        reduceDriver.withOutput(new Text("ip1"), new Text("ip1,15.0,2"));
         reduceDriver.runTest();
     }
+
 }

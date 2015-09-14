@@ -1,5 +1,7 @@
 package com.epam.bigdata.second.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
@@ -56,38 +58,16 @@ public class IpWrittableComparable implements WritableComparable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof IpWrittableComparable)) {
-            return false;
-        }
-
-        IpWrittableComparable that = (IpWrittableComparable) o;
-
-        if (Double.compare(that.average, average) != 0) {
-            return false;
-        }
-        if (count != that.count) {
-            return false;
-        }
-
-        return true;
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(average);
-        result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + count;
-        return result;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public String toString() {
-        return "average=" + average +
-                ", count=" + count;
+        return average + "," + count;
     }
 }

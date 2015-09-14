@@ -4,6 +4,7 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+
 import org.apache.log4j.Logger;
 
 
@@ -36,7 +37,20 @@ public class IpMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         }
 
         context.write(new Text(ip), new IntWritable(bytes));
+        calculateBrowsers(row, context);
         LOG.info("Mapping has ended. IP = " + ip + " Bytes = " + bytes);
+    }
+
+    private void calculateBrowsers(String logLine, Context context) {
+        if (logLine.contains("Mozilla")) {
+            context.getCounter("browser", "Mozilla").increment(1);
+        } else if (logLine.contains("MSIE")) {
+            context.getCounter("browser", "MSIE").increment(1);
+        } else if (logLine.contains("Opera")) {
+            context.getCounter("browser", "Opera").increment(1);
+        } else {
+            context.getCounter("browser", "Other").increment(1);
+        }
     }
 }
 

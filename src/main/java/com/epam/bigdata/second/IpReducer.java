@@ -9,13 +9,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 public class IpReducer extends Reducer<Text, IntWritable, Text, Text> {
-    private static final Logger LOG = Logger.getLogger(IpReducer.class);
 
     @Override
     public void reduce(Text key, Iterable<IntWritable> values,
                        Context context)
             throws IOException, InterruptedException {
-        LOG.info("Combining for ip = " + key + "has started!");
         int count = 0;
         int sum = 0;
 
@@ -27,6 +25,5 @@ public class IpReducer extends Reducer<Text, IntWritable, Text, Text> {
         IpWrittableComparable result = new IpWrittableComparable(average, count);
         Text textResult = new Text(key + "," + result);
         context.write(key, textResult);
-        LOG.info("Combining for ip = " + key + "has ended! Value = " + textResult);
     }
 }

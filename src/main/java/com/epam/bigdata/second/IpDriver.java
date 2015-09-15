@@ -2,9 +2,11 @@ package com.epam.bigdata.second;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.CounterGroup;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -29,8 +31,16 @@ public class IpDriver extends Configured implements Tool {
         LOG.info("IP Job has started");
 
         job.setJarByClass(getClass());
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        Path inputPath = new Path(args[0]);
+        Path outputPath = new Path(args[1]);
+
+        FileInputFormat.addInputPath(job, inputPath);
+        FileOutputFormat.setOutputPath(job, outputPath);
+
+        FileSystem fs = FileSystem.get(conf);
+        fs.delete(outputPath, true);
+
         job.setMapperClass(IpMapper.class);
         job.setReducerClass(IpReducer.class);
 
@@ -39,6 +49,11 @@ public class IpDriver extends Configured implements Tool {
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
+
+        FileOutputFormat.setCompressOutput(job, true);
+
+        FileOutputFormat.setCompressOutput(job, true);
+        FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
 
         boolean isWaitForCompletion = job.waitForCompletion(true);
 

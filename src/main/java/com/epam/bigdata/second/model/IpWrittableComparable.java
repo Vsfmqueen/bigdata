@@ -9,23 +9,23 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class IpWrittableComparable implements WritableComparable {
-    private double average;
+    private String ip;
     private int count;
 
-    public IpWrittableComparable(double average, int count) {
-        this.average = average;
+    public IpWrittableComparable(String ip, int count) {
+        this.ip = ip;
         this.count = count;
     }
 
     public IpWrittableComparable() {
     }
 
-    public double getAverage() {
-        return average;
+    public String getIp() {
+        return ip;
     }
 
-    public void setAverage(double average) {
-        this.average = average;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public Integer getCount() {
@@ -38,21 +38,25 @@ public class IpWrittableComparable implements WritableComparable {
 
     @Override
     public int compareTo(Object o) {
-        IpWrittableComparable comparable = (IpWrittableComparable) o;
-        int averageResult = Double.compare(average, comparable.getAverage());
-        int countResult = Integer.compare(count, comparable.getCount());
-        return Integer.compare(averageResult, countResult);
+        IpWrittableComparable firstComparable = (IpWrittableComparable) o;
+        int ipResult = this.getIp().compareTo(firstComparable.getIp());
+
+        if (ipResult == 0) {
+            return Integer.compare(this.getCount(), firstComparable.getCount());
+        }
+
+        return ipResult;
     }
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
-        dataOutput.writeDouble(average);
+        dataOutput.writeUTF(ip);
         dataOutput.writeInt(count);
     }
 
     @Override
     public void readFields(DataInput dataInput) throws IOException {
-        this.average = dataInput.readDouble();
+        this.ip = dataInput.readUTF();
         this.count = dataInput.readInt();
     }
 
@@ -68,6 +72,6 @@ public class IpWrittableComparable implements WritableComparable {
 
     @Override
     public String toString() {
-        return average + "," + count;
+        return ip + "," + count;
     }
 }

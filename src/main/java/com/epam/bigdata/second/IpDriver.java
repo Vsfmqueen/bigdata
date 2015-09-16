@@ -1,10 +1,15 @@
 package com.epam.bigdata.second;
 
+import com.epam.bigdata.second.model.IpWrittableComparable;
+import com.epam.bigdata.second.secondary.IpComparator;
+import com.epam.bigdata.second.secondary.IpGropper;
+import com.epam.bigdata.second.secondary.IpPartitioner;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.CounterGroup;
@@ -44,28 +49,17 @@ public class IpDriver extends Configured implements Tool {
         job.setMapperClass(IpMapper.class);
         job.setReducerClass(IpReducer.class);
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
+        job.setGroupingComparatorClass(IpGropper.class);
+        job.setSortComparatorClass(IpComparator.class);
+        job.setPartitionerClass(IpPartitioner.class);
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setMapOutputKeyClass(IpWrittableComparable.class);
+        job.setMapOutputValueClass(NullWritable.class);
 
-        FileOutputFormat.setCompressOutput(job, true);
-
-        FileOutputFormat.setCompressOutput(job, true);
-        FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
+        job.setOutputKeyClass(IpWrittableComparable.class);
+        job.setOutputValueClass(NullWritable.class);
 
         boolean isWaitForCompletion = job.waitForCompletion(true);
-
-        CounterGroup group = job.getCounters().getGroup("browser");
-        long mozillaCount = group.getUnderlyingGroup().findCounter("Mozilla").getValue();
-        long operaCount = group.getUnderlyingGroup().findCounter("Opera").getValue();
-        long otherCount = group.getUnderlyingGroup().findCounter("Other").getValue();
-
-
-        System.out.println("Mozilla browser users count = " + mozillaCount);
-        System.out.println("Opera browser users count = " + operaCount);
-        System.out.println("Other browser users count = " + otherCount);
 
         LOG.info("IP Job has ended");
         return isWaitForCompletion ? 0 : 1;
